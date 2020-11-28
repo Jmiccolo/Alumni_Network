@@ -1,0 +1,3 @@
+export const ADD_ERROR = "ADD ERROR";
+export const REMOVE_ERROR = "REMOVE_ERROR";
+export const SET_CURRENT_ALUMNI = "SET_CURRENT_ALUMNI";
