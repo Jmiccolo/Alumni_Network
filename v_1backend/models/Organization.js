@@ -23,7 +23,7 @@ const OrganizationSchema = new mongoose.Schema({
     validatedAssociations:[{type: mongoose.Schema.Types.ObjectId, ref:"Association"}],
     validatedEmails: [String],
     validatedUsers: [{type: mongoose.Schema.Types.ObjectId, ref: "Alumni"}],
-    attemptedValidation: [{firstName:String, lastName:String, email:String}],
+    attemptedValidation: [{type:mongoose.Schema.Types.ObjectId, ref: "Alumni"}],
     tagline:String,
     colors:[String]
 })

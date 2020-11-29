@@ -9,6 +9,7 @@ const {OAuth2Client} = require("google-auth-library");
 
 exports.signup = async function(req, res, next){
     try{
+        console.log(req.body);
         if(!req.body.password || !req.body.username){
             return next({
                 status: 400,
@@ -21,16 +22,25 @@ exports.signup = async function(req, res, next){
         })
         alumni.calendar = calendar;
         alumni.save();
-        let {id, username} = alumni;
+        let {id, username, email} = alumni;
         let token = jwt.sign({
             id, 
             username
         }, 
         process.env.SECRET_KEY
         );
+        let verifyToken = await db.Token.create({ userId: alumni._id, token: jwt.sign({ id, email }, process.env.SECRET_KEY) });
+        // let organization = await db.Organization.findById(alumni.organization);
+        // if(!organization.validatedUsers.some(val=>alumni._id)&&!organization.validatedEmails.some(val=>alumni.email)){
+        //     organization.attemptedValidation.push({firstName:alumni.firstName, lastName:alumni.lastName, email:alumni.email});
+        // } else if (!organization.validatedUsers.some(val => alumni._id) && organization.validatedEmails.some(val => alumni.email)){
+        //     organization.validatedUsers.push(alumni);
+        // }
+        // organization.save();
         return res.status(200).json({
             id,
-            token
+            token,
+            verifyToken
         })
     }catch(err){
         // if a validation fails

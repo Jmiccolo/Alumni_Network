@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { connect } from 'react-redux';
+import {useHistory} from 'react-router-dom';
 import { createOrg } from '../store/actions/auth';
 import { addError } from '../store/actions/errors';
 import {latLong} from '../services/api';
@@ -22,36 +23,41 @@ const Organization = (props) => {
     const [adminFirst, setAdminFirst] = useState("");
     const [adminLast, setAdminLast] = useState("");
     const [adminPassword, setAdminPassword] = useState("");
-
+    const [adminUser, setAdminUser] = useState("");
+    let history = useHistory();
     function handleSubmit(e){
-        e.preventDefault();
-        let formatAddress = `${orgAddress} ${orgStreet},${orgCity},${orgState},${orgZip}`
-        formatAddress = formatAddress.replaceAll(" ", "+");
-        let hq = {}
-        let data = latLong(formatAddress);
-        data.then(res => {
-            hq.type = "point";
-            hq.coordinates = [res.lng, res.lat]}
-            )
-            .catch(err=> {props.addError(err)
-            return});
-            const organization = {
-                name: orgName,
-                email: orgEmail,
-                website: orgWebsite,
-                tagline: orgTag,
-                address: `${orgAddress} ${orgStreet}, ${orgCity}, ${orgState} ${orgZip}`,
-                colors: [orgcolor1, orgcolor2, orgcolor3],
-                hq: hq
-            }
-            const admin = {
-                firstName: adminFirst,
-                lastName: adminLast,
-                email: adminEmail,
-                password: adminPassword
-            }
-            props.createOrg(admin, organization)
-    }
+            e.preventDefault();
+            let formatAddress = `${orgAddress} ${orgStreet},${orgCity},${orgState},${orgZip}`
+            formatAddress = formatAddress.replaceAll(" ", "+");
+            let hq = {};
+            let data = async function(){
+                return await latLong(formatAddress);
+            } 
+            data().then(res => {
+                    console.log(res);
+                    hq.type = "Point";
+                    hq.coordinates = [res.lng, res.lat];
+                const organization = {
+                    name: orgName,
+                    email: orgEmail,
+                    website: orgWebsite,
+                    tagline: orgTag,
+                    address: `${orgAddress} ${orgStreet}, ${orgCity}, ${orgState} ${orgZip}`,
+                    colors: [orgcolor1, orgcolor2, orgcolor3],
+                    hq: hq
+                }
+                const admin = {
+                    firstName: adminFirst,
+                    lastName: adminLast,
+                    username: adminUser,
+                    email: adminEmail,
+                    password: adminPassword
+                }
+                return props.createOrg(admin, organization)
+                }).then(res => history.push("/"))
+                .catch(err=> {props.addError(err.message)
+                });
+    }   
     return (
         <div className="orgForm">
             <div className="orgForm-container">
@@ -96,8 +102,9 @@ const Organization = (props) => {
                         <input type="email" name="admin-email" value={adminEmail} onChange={e=> setAdminEmail(e.target.value)} placeholder="Administrator email" />
                         <input type="text" name="admin-first" value={adminFirst} onChange={e => setAdminFirst(e.target.value)} placeholder="Administrator First Name" />
                         <input type="text" name="admin-last" value={adminLast} onChange={e => setAdminLast(e.target.value)} placeholder="Administrator Last Name" />
+                        <input type="text" name="admin-user" value={adminUser} onChange={e => setAdminUser(e.target.value)} placeholder="Administrator Username" />
                         <input type="password" name="admin-password" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Administrator Password" />
-                        <label htmlFor="org-color1">Pick Colors</label>
+                        <label htmlFor="org-colors">Pick Colors</label>
                         <input type="color" value={orgcolor1} onChange={e => setOrgColor1(e.target.value)} name="org-color1" />
                         <input type="color" value={orgcolor2} onChange={e => setOrgColor2(e.target.value)} name="org-color2" />
                         <input type="color" value={orgcolor3} onChange={e => setOrgColor3(e.target.value)} name="org-color3" />
@@ -114,7 +121,7 @@ const Organization = (props) => {
 
 function mapStateToProps(state) {
     return {
-        currentBrother: state.currentBrother,
+        currentAlumni: state.currentAlumni,
         errors: state.errors
     };
 }

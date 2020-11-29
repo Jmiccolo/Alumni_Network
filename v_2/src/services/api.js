@@ -1,4 +1,5 @@
 import axios from "axios";
+import emailjs from "emailjs-com"
 
 export function setTokenHeader(token) {
     if(token){
@@ -29,4 +30,8 @@ export function latLong(location){
                 return reject(err)
             })
     })
+}
+
+export function userVerify(email, name, token){
+    emailjs.send(process.env.REACT_APP_USER_EMAILJS_SERVICE, process.env.REACT_APP_USER_EMAILJS_TEMPLATE, { email, name, token }, process.env.REACT_APP_EMAILJS_USER).then(res=> res).catch(err=>{console.log(err); return err});
 }

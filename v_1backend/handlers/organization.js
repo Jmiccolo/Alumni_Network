@@ -5,14 +5,14 @@ const jwt = require("jsonwebtoken");
 exports.getOrganizations = async function(req, res){
     await db.Organization.find({})
         .then(function(organizations){
-            res.json(organizations)
+            res.json(organizations.map(val=>{return {name:val.name, id:val.id}}));
         }).catch(err => {
             console.log(err)
             res.send(err);
         })
 }   
 exports.getOrganization = async function(req, res){
-    await db.Organization.findById(req.params.organizationId)
+    await db.Organization.findById(req.body.id)
     .then(function(organization){
         res.json(organization);
     })
@@ -24,6 +24,7 @@ exports.getOrganization = async function(req, res){
 
 exports.createOrganization = async function(req, res, next){
     try {
+        console.log(req.body.org);
         if (!req.body.admin.password || !req.body.admin.firstName) {
             return next({
                 status: 400,
@@ -34,26 +35,24 @@ exports.createOrganization = async function(req, res, next){
         alumni.calendar = await db.Calendar.create({
             name: alumni.id
         });
-        alumni.save();
-        let { id, firstName } = alumni;
+        let { id, username, email } = alumni;
         let token = jwt.sign({
             id,
-            firstName
+            username
         },
             process.env.SECRET_KEY
         );
-        let orgObj = {
-            ...req.body.org,
-            administrator: alumni, 
-            validatedUsers: [alumni],
-            userAmount:1
-        };
-        let organization = await db.Organization.create(orgObj);
+        let organization = await db.Organization.create(req.body.org);
         alumni.organization = organization;
         alumni.save();
+        organization.administrator = alumni;
+        organization.validatedUsers.push(alumni);
+        organization.save();
+        let verifyToken = await db.Token.create({userId:alumni._id, token:jwt.sign({id, email}, process.env.SECRET_KEY)});
         return res.status(200).json({
             id,
-            token
+            token,
+            verifyToken:verifyToken.token
         });
     } catch (err) {
         console.log(err);
@@ -65,6 +64,16 @@ exports.createOrganization = async function(req, res, next){
             status: 400,
             message: err.message
         });
+    }
+}
+
+exports.validateOrganization = async function(req, res,){
+    let alumni = await db.Alumni.findById(req.body.id);
+    let organization = await db.Organization.findById(alumni.organization);
+    if(organization.validatedUsers.includes(alumni._id)){
+        res.json(true);
+    }else{
+        res.json(false);
     }
 }
 module.exports = exports;

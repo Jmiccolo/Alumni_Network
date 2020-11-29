@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const errorHandler = require("./handlers/error");
 var dbRoutes = require('./routes/db');
 var authRoutes = require('./routes/auth');
+var verifyRoutes = require("./routes/verify");
 // var googleRoutes = require('./routes/google');
 var organizationRoutes = require('./routes/organization');
 const { loginRequired } = require("./middleware/auth");
@@ -20,11 +21,13 @@ app.use("/api/alumni", loginRequired, dbRoutes);
 app.use("/api/auth", authRoutes);
 // app.use("/api/google", googleRoutes);
 app.use("/api/organizations", organizationRoutes);
+app.use("/api/verify", verifyRoutes);
 app.use(function(req, res, next){
     let err = new Error("Not Found")
     err.status = 404;
     next(err)
 });
+
 
 app.use(errorHandler);
 

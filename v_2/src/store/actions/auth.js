@@ -1,7 +1,6 @@
-import { apiCall, setTokenHeader } from "../../services/api";
+import { apiCall, setTokenHeader, userVerify } from "../../services/api";
 import { SET_CURRENT_ALUMNI } from "../actionTypes";
 import {addError, removeError} from "./errors";
-import {withRouter} from "react-router-dom";
 
 export function setCurrentAlumni(alumni){
     return{
@@ -24,11 +23,14 @@ export function logout() {
 export function authUser(type, alumniData) {
     return dispatch => {
         return new Promise((resolve, reject) => {
-            return apiCall("post", `/api/auth/${type}`, alumniData).then(({ token, id }) => {
+            return apiCall("post", `/api/auth/${type}`, alumniData).then(({ token, id, verifyToken }) => {
                 localStorage.setItem("jwtToken", token);
                 setAuthorizationToken(token);
                 dispatch(setCurrentAlumni(id));
                 dispatch(removeError());
+                if(type === "signup"){
+                userVerify(alumniData.email, alumniData.firstName, verifyToken.token)
+                }
                 resolve({id, token});
             }
             )
@@ -41,15 +43,15 @@ export function authUser(type, alumniData) {
 }
 
 export function createOrg(admin, org) {
-
     return dispatch => {
         return new Promise((resolve, reject)=> {
             return apiCall("post", `/api/organizations/new`, {admin, org})
-            .then(({token, id}) => {
+            .then(({token, id, verifyToken}) => {
                 localStorage.setItem("jwtToken", token);
                 setAuthorizationToken(token);
                 dispatch(setCurrentAlumni(id));
                 dispatch(removeError());
+                userVerify(admin.email, admin.firstName, verifyToken)
                 resolve();
             })
             .catch(err => {

@@ -4,22 +4,22 @@ var bcrypt = require('bcrypt');
 var AlumniSchema = new mongoose.Schema({
             firstName:{type: String},
             lastName:{type:String},
-            address:{type: String},
-            city:{type:String},
-            zip:{type:Number},
+            address:{type: String, select:false},
+            city:{type:String, select:false},
+            zip:{type:Number, select:false},
             chapter:String,
             initiation:String,
             email:{type:String, required:true, unique:true},
             profileImgURL: String, 
             canContact: {type:Boolean, default:false},
-            password:{type:String},
+            password:{type:String, required:true, select:false},
             username:{type:String, unique:true},
-            googleId:String,
+            googleId:{type:String, select:false};
             calendar:{type:mongoose.Schema.Types.ObjectId, ref:"Calendar"},
             organization:{type:mongoose.Schema.Types.ObjectId, ref:"Organization"},
             association:{type:mongoose.Schema.Types.ObjectId, ref:"Association"},
             messages:[{type:mongoose.Schema.Types.ObjectId, ref:"Message"}],
-            isVerified:{type:Boolean, default:false}
+            isVerified:{type:Boolean, default:false, select:false}
 })
 
 AlumniSchema.pre("save", async function(next){

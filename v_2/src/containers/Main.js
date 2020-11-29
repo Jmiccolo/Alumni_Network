@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import Landing from "../components/Landing";
 import HomePage from '../components/Homepage';
 import Organization from '../components/Organization'
+import Verify from '../components/Verify'
 
 const Main = props => {
     const { currentAlumni } = props;
@@ -25,7 +26,16 @@ const Main = props => {
     }
     return (
         <div>
-            <HomePage />
+            <Router>
+                <Switch>
+                    <Route exact path="/">
+                        <HomePage />
+                    </Route>
+                    <Route path="/verify/:token">
+                        <Verify />
+                    </Route>
+                </Switch>
+            </Router>
         </div>
     )
 }
