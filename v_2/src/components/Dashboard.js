@@ -4,16 +4,15 @@ import { useEffect } from 'react';
 import {connect} from 'react-redux';
 
 function Dashboard(props) {
-    let [orgColors, setOrgColors] = useState([]);
-    let [orgName, setOrgName] = useState("");
-
-    useEffect(()=>{
-
-    }, [])
+    let {color1, color2, color3} = props.currentOrg;
+    let headerStyle = {
+        color: color1,
+        backgroundColor:color2    
+    }
     return (
         <div>
-            <div className="header">
-                <h1>{orgName}</h1>
+            <div style={headerStyle} className="header">
+                <h1>{props.currentOrg}</h1>
             </div>
         </div>
     );
@@ -22,6 +21,7 @@ function Dashboard(props) {
 function mapStateToProps(state) {
     return {
         currentAlumni: state.currentAlumni,
+        currentOrg: state.currentOrg,
         errors: state.errors
     };
 }

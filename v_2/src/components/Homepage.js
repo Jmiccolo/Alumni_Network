@@ -2,25 +2,22 @@ import React from "react";
 import { connect } from 'react-redux';
 import { apiCall } from "../services/api";
 import { useEffect, useState } from "react";
+import {isAlumniValidated} from '../store/actions/organization'
 import OrgForm from "./OrgForm"
 import Dashboard from './Dashboard';
 
 function Homepage(props) {
-    const [organization, setOrg] = useState(null);
-    const [isVerified, setAlumni] = useState(false);
+    const {isVerified} = props.currentAlumni;
+    const {isValidated} = props.currentOrg;
     useEffect(()=>{
-        apiCall("get", `api/alumni/${props.currentAlumni.id}`)
-        .then(alumni =>  {
-            setAlumni(alumni.isVerified);
-            apiCall("post", 'api/organizations/validate', {id:alumni._id})
-                .then(res => res ? setOrg(alumni.organization):setOrg(null));
-    })
-    .catch(err => console.log(err));
-    },[])
+        if(isVerified){
+            isAlumniValidated(props.currentAlumni);
+        }
+    }, []);
     if(isVerified){
     return (
         <div>
-            {organization ?
+            {isValidated ?
             <Dashboard/>
             :
             <OrgForm/>
@@ -40,6 +37,7 @@ function Homepage(props) {
 function mapStateToProps(state) {
     return {
         currentAlumni: state.currentAlumni,
+        currentOrg: state.currentOrg,
         errors: state.errors
     };
 }

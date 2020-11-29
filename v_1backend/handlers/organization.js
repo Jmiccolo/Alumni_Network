@@ -68,12 +68,17 @@ exports.createOrganization = async function(req, res, next){
 }
 
 exports.validateOrganization = async function(req, res,){
-    let alumni = await db.Alumni.findById(req.body.id);
-    let organization = await db.Organization.findById(alumni.organization);
-    if(organization.validatedUsers.includes(alumni._id)){
-        res.json(true);
-    }else{
-        res.json(false);
+    try{
+        let alumni = await db.Alumni.findById(req.body.id);
+        let organization = await db.Organization.findById(alumni.organization);
+        if(organization.validatedUsers.includes(alumni._id)){
+            res.json({isValidated:true, organization});
+        }else{
+            res.json({isValidated:false, organization:null});
+        }
+    }
+    catch{
+        res.json({isValidate:false, organization:null});
     }
 }
 module.exports = exports;

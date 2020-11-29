@@ -67,7 +67,7 @@ class Landing extends Component {
         return (
             <div id="landing">
                 <h1>The Greek Alumni Network</h1>
-                <h2 className="text-center">A place for Post-Grad Greek Life to reach out and connect with their    Alumni</h2>
+                <h2 className="text-center">A place for Post-Grad Greek Life to reach out and connect with their Alumni</h2>
                 {this.props.errors ? 
                 <h3 style={{color:'red'}}>{this.props.errors.message}</h3>
                 :null}
@@ -107,6 +107,7 @@ class Landing extends Component {
 function mapStateToProps(state) {
     return {
         currentAlumni: state.currentAlumni,
+        currentOrg: state.currentOrg,
         errors: state.errors
     };
 }

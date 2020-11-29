@@ -14,12 +14,12 @@ var AlumniSchema = new mongoose.Schema({
             canContact: {type:Boolean, default:false},
             password:{type:String, required:true, select:false},
             username:{type:String, unique:true},
-            googleId:{type:String, select:false};
+            googleId:{type:String, select:false},
             calendar:{type:mongoose.Schema.Types.ObjectId, ref:"Calendar"},
             organization:{type:mongoose.Schema.Types.ObjectId, ref:"Organization"},
             association:{type:mongoose.Schema.Types.ObjectId, ref:"Association"},
             messages:[{type:mongoose.Schema.Types.ObjectId, ref:"Message"}],
-            isVerified:{type:Boolean, default:false, select:false}
+            isVerified:{type:Boolean, default:false}
 })
 
 AlumniSchema.pre("save", async function(next){

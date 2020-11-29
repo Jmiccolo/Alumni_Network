@@ -3,7 +3,7 @@ var fetch = require('node-fetch');
 
 
 exports.getAlumnis = function(req, res){
-    db.Alumni.find({})
+    db.Alumni.find(req.body)
     .then(function(alumnis){
         res.json(alumnis);
     })
@@ -13,7 +13,7 @@ exports.getAlumnis = function(req, res){
 };
 
 exports.getAlumni =  function(req, res){
-    db.Alumni.findById(req.params.AlumniId)
+    db.Alumni.findById(req.body.id)
     .then(function(foundAlumni){
         res.json(foundAlumni);
     })
@@ -23,7 +23,7 @@ exports.getAlumni =  function(req, res){
 };
 
 exports.updateAlumni = function(req, res){
-    db.Alumni.findOneAndUpdate({_id: req.params.AlumniId}, req.body, {new:true})
+    db.Alumni.findOneAndUpdate({_id: req.body.id}, req.body, {new:true})
     .then(function(alumni){
         res.json(alumni);
     })
@@ -33,7 +33,7 @@ exports.updateAlumni = function(req, res){
 };
 
 exports.deleteAlumni = function(req, res){
-    db.Alumni.deleteOne({_id: req.params.AlumniId})
+    db.Alumni.deleteOne({_id: req.body.id})
     .then(function(){
         res.json("We Deleted It");
     })
